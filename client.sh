@@ -1,2 +1,2 @@
-curl -X POST --header "Content-Type:application/json" --data-binary '{"jsonrpc": "2.0", "id": 1, "method": "application.greeting", "params": {"name": "Bram", "delay": 2}}' http://localhost:8080 &
-curl -X POST --header "Content-Type:application/json" --data-binary '{"jsonrpc": "2.0", "id": 2, "method": "application.greeting", "params": {"name": "Bram", "delay": 1}}' http://localhost:8080 &
+#!/bin/sh
+/usr/bin/env python tests/application.py
