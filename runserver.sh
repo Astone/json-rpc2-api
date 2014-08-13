@@ -1,2 +1,2 @@
-PYTHONPATH=. runjsonrpc2 hello
+PYTHONPATH=src runjsonrpc2 application
 
