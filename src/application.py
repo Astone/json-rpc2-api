@@ -1,17 +1,35 @@
 #!/usr/bin/env python
-from bjsonrpc.handlers import BaseHandler
-from bjsonrpc import createserver, bjsonrpc_options
+from tornadorpc import async
+from threading import Thread
+from tornadorpc import start_server
+from tornadorpc.json import JSONRPCHandler
 from private import secret_message
 import time
 
-class Api(BaseHandler):
+class ServerAgentAsync(Thread):
+
+    def __init__(self, method, callback, *args, **kwargs):
+        super(ServerAgentAsync, self).__init__()
+        self.method = getattr(self, method)
+        self.callback = callback
+        self.kwargs = kwargs
+
+    def run(self):
+        try:
+            self.callback(self.method(**self.kwargs))
+        except Exception as err:
+            self.callback(err)
 
     def greeting(self, name, delay=0):
         time.sleep(delay)
         return {'message': secret_message(name)}
 
+class ServerAgentApi(JSONRPCHandler):
+
+    @async
+    def greeting(self, *args, **kwargs):
+        agent = ServerAgentAsync("greeting", self.result, *args, **kwargs)
+        agent.start()
+
 if __name__ == '__main__':
-    bjsonrpc_options['threaded'] = True
-    server = createserver(host='127.0.0.1', port=8080, handler_factory=Api)
-    server.debug_socket(True)
-    server.serve()
+    start_server(ServerAgentApi, port=8080)
